@@ -79,3 +79,9 @@ python -m unittest discover -s tests -v
 Tests compare randomized sorts against Python; cover duplicate/missing search targets, cycles, disconnected graphs, zero-weight relaxation, malformed inputs, bounded traces, and CLI results. CI checks Python 3.10, 3.12, and 3.13.
 
 MIT licensed. Built by Michael Sanders.
+
+## Browser learning lab
+
+Run `python3 -m algorithms_in_action lab` and open **http://127.0.0.1:4176/**. The lab calls the same Python implementations as the CLI. Choose an algorithm, enter your own values or directed graph, and run it. Step forward/back, scrub, rewind or play the recorded trace at three speeds. Array bars and directed graph highlights show changing state; exact state, final output, operation counts and JSON export remain available.
+
+The lab accepts at most 80 values, 24 total graph nodes and 120 edges, with 500 recorded steps. It binds only to loopback, rejects foreign origins/hosts and serves an explicit asset allowlist. No account, dependencies, remote processing, saved input or credentials. Use `--port 4177` to choose another local port. The CLI retains its larger input limits.
