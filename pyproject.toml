@@ -14,3 +14,6 @@ dependencies = []
 algorithms = "algorithms_in_action.cli:main"
 [tool.setuptools.packages.find]
 include = ["algorithms_in_action*"]
+
+[tool.setuptools.package-data]
+algorithms_in_action = ["web_assets/*"]

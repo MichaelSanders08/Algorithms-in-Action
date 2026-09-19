@@ -72,6 +72,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description='Run, trace, and compare algorithms. No dependencies or accounts.')
     sub = parser.add_subparsers(dest='command')
     sub.add_parser('list', help='Show algorithms and complexity')
+    lab = sub.add_parser('lab', help='Open a local browser learning lab')
+    lab.add_argument('--port', type=int, default=4176)
     command = sub.add_parser('run', help='Run on your own data')
     command.add_argument('algorithm', choices=list(ALGORITHMS))
     command.add_argument('--values', help='Numbers, such as "8,3,5" or "[8,3,5]"')
@@ -95,6 +97,9 @@ def main(argv=None):
             for name, meta in ALGORITHMS.items():
                 print(f"{name:18} {meta['time']:24} {meta['idea']}")
             print('\nComplexity excludes validation and trace storage. Binary search validates order in O(n).')
+        elif args.command == 'lab':
+            from .web import serve
+            serve(args.port)
         elif args.command == 'run':
             graph = json.loads(args.graph.read_text()) if args.graph else None
             values = parse_values(args.values) if args.values is not None else None
