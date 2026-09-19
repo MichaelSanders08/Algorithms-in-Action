@@ -23,7 +23,7 @@ class AlgorithmsTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'ascending'):
             run('binary-search', [2, 1], target=1)
     def test_numeric_validation(self):
-        for value in (True, '4', float('nan'), float('inf')):
+        for value in (True, '4', float('nan'), float('inf'), 10**1000):
             with self.assertRaises(ValueError):
                 run('merge-sort', [value])
     def test_bfs_cycles_and_destination_only_nodes(self):
@@ -31,6 +31,8 @@ class AlgorithmsTest(unittest.TestCase):
         self.assertEqual(result.output['path'], ['a','b','d'])
         self.assertIsNone(result.output['distances']['island'])
         self.assertEqual(len(result.output['order']), 4)
+        fanout = {'root': ['n'+str(i) for i in range(1000)] * 2}
+        self.assertEqual(run('bfs', graph=fanout, start='root', trace_limit=0).metrics['visited'], 1001)
     def test_dijkstra_relaxation_zero_edges_and_disconnection(self):
         graph = {'a':{'b':10,'c':1},'c':{'b':0},'b':{'d':2},'x':{}}
         result = run('dijkstra', graph=graph, start='a', end='d')
@@ -46,6 +48,10 @@ class AlgorithmsTest(unittest.TestCase):
                 run('dijkstra', graph=graph, start='a')
         with self.assertRaises(ValueError):
             run('bfs', graph={'a':[]}, start='missing')
+        with self.assertRaises(ValueError):
+            run('bfs', graph={'a':[]}, start=[])
+        with self.assertRaises(ValueError):
+            run('linear-search', [1], target=1, trace_limit=True)
     def test_trace_cap_does_not_change_answer(self):
         result = run('insertion-sort', list(range(30,0,-1)), trace_limit=2)
         self.assertTrue(result.trace_truncated)
