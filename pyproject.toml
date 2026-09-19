@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "algorithms-in-action"
+version = "1.0.0"
+description = "Run, trace, and compare algorithms in a transparent terminal workbench."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [{name = "Michael Sanders"}]
+dependencies = []
+[project.scripts]
+algorithms = "algorithms_in_action.cli:main"
+[tool.setuptools.packages.find]
+include = ["algorithms_in_action*"]
