@@ -38,8 +38,12 @@ class Result:
 
 
 def number(value):
-    if isinstance(value, bool) or not isinstance(value, Real) or not math.isfinite(value):
-        raise ValueError('Use finite numbers, not booleans, NaN, or infinity.')
+    try:
+        valid = not isinstance(value, bool) and isinstance(value, Real) and math.isfinite(value)
+    except OverflowError:
+        valid = False
+    if not valid:
+        raise ValueError('Use finite numbers within the supported numeric range, not booleans, NaN, or infinity.')
     return value
 
 
@@ -48,6 +52,7 @@ def graph_nodes(graph, weighted):
         raise ValueError('The graph must be a nonempty object with nonempty string node names.')
     result = {node: {} if weighted else [] for node in graph}
     for node, edges in graph.items():
+        seen_neighbors = set()
         if weighted:
             if not isinstance(edges, dict):
                 raise ValueError('Dijkstra needs neighbor-to-weight objects, such as {"A": {"B": 2}}.')
@@ -64,7 +69,8 @@ def graph_nodes(graph, weighted):
             result.setdefault(neighbor, {} if weighted else [])
             if weighted:
                 result[node][neighbor] = weight
-            elif neighbor not in result[node]:
+            elif neighbor not in seen_neighbors:
+                seen_neighbors.add(neighbor)
                 result[node].append(neighbor)
     return result
 
@@ -72,7 +78,7 @@ def graph_nodes(graph, weighted):
 def run(algorithm, values=None, *, target=None, graph=None, start=None, end=None, trace_limit=200):
     if algorithm not in ALGORITHMS:
         raise ValueError(f'Unknown algorithm: {algorithm}')
-    if not isinstance(trace_limit, int) or not 0 <= trace_limit <= 5000:
+    if type(trace_limit) is not int or not 0 <= trace_limit <= 5000:
         raise ValueError('Trace limit must be an integer from 0 to 5000.')
     result = Result(algorithm, trace_limit=trace_limit)
     kind = ALGORITHMS[algorithm]['kind']
@@ -144,7 +150,7 @@ def run(algorithm, values=None, *, target=None, graph=None, start=None, end=None
 def _graph(result, raw, start, end):
     weighted = result.algorithm == 'dijkstra'
     graph = graph_nodes(raw, weighted)
-    if start not in graph or (end is not None and end not in graph):
+    if not isinstance(start, str) or start not in graph or (end is not None and (not isinstance(end, str) or end not in graph)):
         raise ValueError('Start and destination must be nodes in the graph.')
     distances = {node: math.inf for node in graph}
     distances[start] = 0
